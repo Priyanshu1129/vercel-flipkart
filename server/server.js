@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
+import path from 'path'
 import express  from "express"
 import Connection from "./Database/connectdb.js"
 import DefalutData from './default.js'
@@ -12,6 +13,7 @@ import router from './routes/route.js'
 const app = express()
 const PORT = process.env.PORT 
 const URL = process.env.DB_URL
+const dirname = path.resolve()
 
 app.use(bodyParser.json({extended: true}))
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -21,11 +23,15 @@ app.use('/', router)
 Connection(URL)  
 
 if(process.env.NODE_ENV === 'production'){
-    app.use(express.static('client/build'))
+    app.use(express.static('build'))
 }
 app.listen(PORT, ()=>[
     console.log(`server is listening on port ${PORT}...`)
 ])
+
+app.get('*',(req,res)=>{
+    res.sendFile(path.join(dirname, 'build/index.html'))
+})
 
 
 // DefalutData()
